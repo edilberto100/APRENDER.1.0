@@ -1,0 +1,70 @@
+===============================================================================
+Instructions for Building and running APPHi-field:
+===============================================================================
+
+1.- Compile-script
+APPHi folder has a Compile-script, to run this script you must have installed
+the cfitsio and hdf5 library. You can compile de Compile-script script with
+
+./Compile-script
+
+The Compile-script generates the APPHi_field program.
+
+2.- To run APPHi_field program, you need four txt files (Bias.txt, Darks.txt,
+flats.txt and field.txt). Each txt files must have the path of each fits file
+(see the examples files on the steep 2). APPHi has six into parameter (Bias,
+Darks, flats, field, umbrall and number of curves for the noise signal in
+this order).
+
+Bias, Darks, flats and field files are the list of each fits files.
+Umbrall is the parameter of light on the field (this value must be between 0 and 1).
+This parameter help the APPHi in the binarization to find the stars. The higher be
+the umbrall, the fewer stars we will find. Default Value of this umbrall is 0.25. And
+the final parameter describes the number of lightcurve used for the noise signal.
+
+You can run the example for APPHi_field program on the APPHI-field folder with
+./Test-script
+
+3.- To run APPHi_field program, you need four txt files (Bias.txt, Darks.txt,
+flats.txt and field.txt). Each txt files must have the path of each fits file
+(see the examples files on the steep 2). APPHi has six into parameter (Bias,
+Darks, flats, field, umbrall and number of curves for the noise signal in
+this order).
+
+Bias, Darks, flats and field files are the list of each fits files.
+Umbrall is the parameter of light on the field (this value must be between 0 and 1).
+This parameter help the APPHi in the binarization to find the stars. The higher be
+the umbrall, the fewer stars we will find. Default Value of this umbrall is 0.25. And
+the final parameter describes the number of lightcurve used for the noise signal.
+
+You can see who enter into parameters whith 
+
+./APPHi_field --help
+
+APPHi_field -- Automated Photometry Pipeline for High Cadence and  Large Volume
+Data -
+
+  -b, --biaslist=STRING      File list that include the Bias Files
+  -d, --darklist=STRING      File list that include the Dark Files
+  -f, --flatlist=STRING      File list that include the Flat Files
+  -l, --starlist=STRING      File list that include the star position x,y,dim
+  -n, --npixels=INTEGER      Number of stack to calculate the SNR curve 
+  -s, --sciencelist=STRING   File list that include the Scientfic Data
+  -t, --Integration Time=int Integration time in seconds
+  -x, --list D1=STRING       Diameter of a star [d1,d2,d3, ... , dn].
+  -y, --D2=int               Diametro menor del anillo
+  -z, --D3=int               Diametro mayor del anillo
+  -?, --help                 Give this help list
+      --usage                Give a short usage message
+  -V, --version              Print program version
+
+Mandatory or optional arguments to long options are also mandatory or optional
+for any corresponding short options.
+
+a pipeline for  TAOSII Proyect http://taos2.astrosen.unam.mx
+
+Report bugs to <taos2_apphi@astrosen.unam.mx>.
+
+
+
+

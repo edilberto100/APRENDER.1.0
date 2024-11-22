@@ -3,30 +3,34 @@
 #include "aprender.h"
 
 const char *argp_program_version =
-  "APRENDER 1.0";
+  "APPHi_field 1.0";
 const char *argp_program_bug_address =
-  "<edilberto@astro.unam.mx>";
+  "<taos2_apphi@astrosen.unam.mx>";
 
 /* The options we understand. */
 static struct argp_option options[] = {
-  {"BiasList",  'b', "string",      0,
+  {"biaslist",  'b', "STRING",      0,
    "File list that include the Bias Files" },
-  {"DarkList",  'd', "string",      0,
+  {"darklist",  'd', "STRING",      0,
    "File list that include the Dark Files" },
-  {"FlatList",  'f', "string",      0,
+  {"flatlist",  'f', "STRING",      0,
    "File list that include the Flat Files" },
-  {"ScienceList",   's', "string", 0,
-  "File list that include the Scientific Data" },
-  {"PositionList",  'l', "string",      0,
-   "File list that include the star position x,y" },
-  {"D1",  'x', "string",      0,
-   "Diameters of annulus in pixels[d1,d2,d3, ... , dn]." },
+  {"sciencelist",   's', "STRING", 0,
+  "File list that include the Scientfic Data" },
+  {"starlist",  'l', "STRING",      0,
+   "File list that include the star position x,y,dim" },
+  {"list D1",  'x', "STRING",      0,
+   "Diameter of a star [d1,d2,d3, ... , dn]." },
   {"D2",  'y', "int",      0,
-   "Smallest diameter of dannulus" },
+   "Diametro menor del anillo" },
   {"D3",  'z', "int",      0,
-   "Largest diameter of dannulus" },
-  {"TimeInt",  't', "int",      0,
-   "Integration time in seconds. Only if the image header does not include the integration time." },
+   "Diametro mayor del anillo" },
+  {"Integration Time",  't', "int",      0,
+   "Integration time in seconds" },
+  //{"umbral",   'u', "FLOAT", 0,
+  //   "Binarization Umbral to detect stars (0.0 to 1.0)" },
+  {"npixels",   'n', "INTEGER", 0,
+     "Number of stack to calculate the SNR curve " },
   { 0 }
 };
 
@@ -90,7 +94,7 @@ parse_opt (int key, char *arg, struct argp_state *state)
 }
 
 static char doc[] =
-  "APRENDER: Automated Pipeline for the REduction of astroNomical images and asteroiD photomEtRy.-\va pipeline for  TAOSII Proyect http://taos2.astrosen.unam.mx";
+  "APPHi_field -- Automated Photometry Pipeline for High Cadence and  Large Volume Data -\va pipeline for  TAOSII Proyect http://taos2.astrosen.unam.mx";
 
 static char args_doc[] = " ";
 

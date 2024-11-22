@@ -634,3 +634,68 @@ void save_ALCDEF(STAR_DATA star, long int lz, double *jd, HEADER header)
 
 return;
 }
+
+void save_ALCDEF_complete(STAR_DATA *star, long int cant, double *jd, HEADER header, int nobj, int aper,char name[])
+{
+//save_txt(star.txt,jd,star.curve,star.err,star.naxes[2]);
+    long int i,j;
+    char fileout[500];
+    aper_name(name,star[aper*nobj].naxes[0],fileout);
+
+    FILE *file = fopen(fileout, "wt");
+    star[aper*nobj].naxes[0];
+
+
+    fprintf(file, "STARTMETADATA\n");
+    fprintf(file, "SUBMITPDS=TRUE\n");
+    fprintf(file, "OBJECTNUMBER=%s\n",header.object);
+    fprintf(file, "OBJECTNAME=%s\n",header.object);
+    fprintf(file, "SESSIONDATE=%s\n",header.DateObs);
+    fprintf(file, "SESSIONTIME=%s\n",header.UT);
+    fprintf(file, "CONTACTNAME=%s\n",header.Observer);
+    fprintf(file, "CONTACTINFO=NONE\n");
+    fprintf(file, "OBSERVERS=%s\n",header.Observer);
+    fprintf(file, "FACILITY=%s\n",header.Origin);
+    fprintf(file, "MPCCODE=NONE\n");
+    fprintf(file, "OBSLATITUDE=%s\n",header.Latitud);
+    fprintf(file, "OBSLONGITUDE=%s\n",header.Longitud);
+    fprintf(file, "TELESCOPE=%s\n",header.Telescop);
+    fprintf(file, "DETECTOR=%s\n",header.CCDType);
+    fprintf(file, "EXPOSURE=%s\n",header.ExpTime);
+    fprintf(file, "EXPJD=NONE\n");
+    fprintf(file, "OBJECTRA=%s\n",header.RA);
+    fprintf(file, "OBJECTDEC=%s\n",header.Dec);
+    fprintf(file, "FILTER=%s\n",header.Filter);
+    fprintf(file, "MAGBAND=%s\n",header.Filter);
+    fprintf(file, "DIFFERMAGS=FALSE\n");
+    fprintf(file, "STANDARD=INTERNAL\n");
+    fprintf(file, "LTCAPP=NONE\n");
+    fprintf(file, "LTCTYPE=NONE\n");
+    fprintf(file, "REDUCEDMAGS=NONE\n");
+    fprintf(file, "DELIMITER=PIPE\n");
+    fprintf(file, "ENDMETADATA\n");
+
+    for(j=(aper*nobj) ; j<((aper*nobj)+nobj) ; j++)
+    {
+        for(i=0 ; i< star[j].naxes[2]; i++)
+        {
+            fprintf(file, "DATA=%lf|%f|%f\n", jd[i], star[j].curve[i], star[j].err[i]);
+        }
+    }
+
+    fprintf(file, "ENDDATA\n");
+    fclose(file);
+
+return;
+}
+
+void aper_name(char name[], long int x, char star[])
+{
+  sprintf(star,"%s", name);
+  char xy[4];
+  char ext[]  =".dat";
+  sprintf(xy,"%ld", x);
+  strcat(star, xy);
+  strcat(star,ext);
+  return;
+}

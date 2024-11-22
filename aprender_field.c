@@ -216,7 +216,7 @@ int apphi_field(struct arguments arguments) {
 
 
   /************************* Select the stars **********************************/
-  int nf=1, nist;
+  int nf=1, nist, nobj,naper;
   night_files = get_data_fits(&filemef_science[m][0], &nf);
   file = fopen(arguments.ist,"r");
   if (file == NULL)
@@ -227,7 +227,7 @@ int apphi_field(struct arguments arguments) {
   else
   {
   fclose(file);
-  comp = read_position(arguments);
+  comp = read_position(arguments,&nobj,&naper);
   }
   MASTER_DATA * night;
   if (comp.cant == 0)
@@ -253,6 +253,7 @@ int apphi_field(struct arguments arguments) {
   D  = (int*) calloc(comp.cant,sizeof(int));
   D2 = (int*) calloc(comp.cant,sizeof(int));
 
+  //printf("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
   for(i=0 ; i<comp.cant ; i++)
   {
 
@@ -277,6 +278,7 @@ int apphi_field(struct arguments arguments) {
    sky[i].naxes[2] = nx_z;
    sky[i].data = (float*) calloc(nx_z*D2[i]*D2[i],sizeof(float));
   }
+ // printf("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
   /*****************************************************************************/
 
   /*****************************************************************************/
@@ -411,6 +413,11 @@ int apphi_field(struct arguments arguments) {
         free_STAR_DATA(st[i],lz);
     }
   }
+  for(i=0 ; i<naper ; i++)
+  {
+     save_ALCDEF_complete(st,comp.cant,JD,header,nobj,i,name);
+  }
+
   /***************************************************************************************/
 
   /***************************************************************************************/

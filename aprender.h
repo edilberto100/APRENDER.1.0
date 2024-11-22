@@ -133,6 +133,13 @@ hsize_t *naxes;
 float *data;
 }HDF5_DATA_FL;
 
+typedef struct
+{
+int dim;
+float *x;
+float *y;
+}MASK_CIRCLE;
+
 //This functions are in apphi_field.c
 int apphi_field(struct arguments arguments);
 
@@ -180,7 +187,8 @@ int apphi_field(struct arguments arguments);
  double * JDmag_hdf5(float * fluxes, double * JD, float *error, long int dim);
  void save_txt(char name[], double *C1, float *C2, float *C3, long int dim);
  void save_ALCDEF(STAR_DATA star, long int lz, double *jd, HEADER header);
-
+ void save_ALCDEF_complete(STAR_DATA *star, long int cant, double *jd, HEADER header, int nobj, int aper,char name[]);
+ void aper_name(char name[], long int x, char star[]);
 
  void scan_group(hid_t gid);
  void scan_attrs(hid_t oid);
@@ -191,7 +199,7 @@ int apphi_field(struct arguments arguments);
  void do_plist(hid_t pid);
 
 //This functions are in Aphhi_search.c
-STAR_BIN read_position(struct arguments arguments);
+STAR_BIN read_position(struct arguments arguments,int * nobj, int *naper);
 STAR_BIN conv_img(long int *data, float umbrall, long int *naxes, int D , float *comp);
 float * create_gaussean(int d1);
 float * create_mask_circle(int d1);
@@ -199,7 +207,12 @@ int * create_mask_ring(int d1, int d2);
 void free_STAR_BIN(STAR_BIN datos);
 STAR_BIN select_stars(STAR_BIN comp, long int * naxes , float *night);
 float get_max(long int *bin,long int *px,long int *py, float *night, long int * naxes);
-
+void sort_two_arr(float *X, float *Y, int ndata, int d);
+MASK_CIRCLE supr_zeros(float *x, float *y, int din);
+void free_MASK_CIRCLE(MASK_CIRCLE data);
+MASK_CIRCLE concat_arr(MASK_CIRCLE c1, MASK_CIRCLE c2, MASK_CIRCLE c3, MASK_CIRCLE c4);
+void delete_equals(MASK_CIRCLE data);
+float * map_area(MASK_CIRCLE in, float dspace, int area, int d);
 
 // Agregadas por Elias
 CORD get_perfil(float* frame,long int* naxes);

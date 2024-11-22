@@ -6,7 +6,7 @@
  **************************************************************/
  #include "aprender.h"
 
-STAR_BIN read_position(struct arguments arguments)
+STAR_BIN read_position(struct arguments arguments,int * nobj, int *naper)
  {
  STAR_BIN comp, data;
  int nist, ndiam,i,j;
@@ -14,6 +14,8 @@ STAR_BIN read_position(struct arguments arguments)
  long int * diameter= get_diameter(arguments.d1,&ndiam);
  /*for(i=0; i<ndiam;i++)
    printf("%ld \n",diameter[i]);*/
+ naper[0]=ndiam;
+ nobj[0]=comp.cant;
 
  data.cant=ndiam*comp.cant;
  data.bin=(long int*) calloc(data.cant,sizeof(long int));
@@ -549,162 +551,66 @@ return Y;
 
 float * create_mask_circle(int d1)
 {
-  float r1 = ((float)d1)/2;
   int i,j;
-  float rint;
-  float *mask = (float*) calloc(d1*d1,sizeof(float));
   float *maskC = (float*) calloc(d1*d1,sizeof(float));
-  float *maskx = (float*) calloc((d1+1)*(d1+1),sizeof(float));
-  float *masky = (float*) calloc((d1+1)*(d1+1),sizeof(float));
-  float *maskxy = (float*) calloc((d1+1)*(d1+1),sizeof(float));
+  float ii;
+  int area=d1;
+  float r2=(float)d1/2;
+  float ax=r2, bx=r2;
+  float dspace=0.00001;
+  float ndata=(float)area/dspace;
+  int sum=0;
+  int arr=area*ndata;
 
-  float  a,b,y1,y2;
-  a=((float)d1)/2;
-  b=a;
+  MASK_CIRCLE cir,qa,qb;
 
-  for (i=0; i<d1; i++)
+  cir.dim=ndata*2;
+  cir.x = (float*) calloc((cir.dim),sizeof(float));
+  cir.y = (float*) calloc((cir.dim),sizeof(float));
+
+  //printf("area:%d,r2:%f,ax:%f,bx:%f,dspace:%f,arr:,cir.dim:%d, ndata:%f\n",area,r2,ax,bx,dspace,arr,cir.dim,ndata);
+
+  int pa=0,pb=0;
+
+  for (i=0; i<ndata; i++)
   {
-  y2= (b+sqrt((r1*r1)-((i-a)*(i-a)))) ;
-  y1= (b-sqrt((r1*r1)-((i-a)*(i-a)))) ;
-  //printf("Diameter=%d, Radio=%f Y1=%f , Y2= %f\n",d1,r1,(y1),(y2));
-  for (j=0; j<d1; j++)
+        float px=(i*dspace);
+        cir.x[i]= px;
+        cir.x[(int)(2*ndata)-1 - i]= px;
+
+        cir.y[i] = (bx+sqrt((r2*r2)-((px-ax)*(px-ax))));
+        cir.y[(int)(2*ndata)-1 - i]= (bx-sqrt((r2*r2)-((px-ax)*(px-ax))));
+  }
+
+
+  for(i=0; i<cir.dim ;i++)
+  {
+    if(isnan(cir.y[i]) == 1)
     {
-        if(j <= (y2+1) && j >= (y1-1) )
-        {
-            if(j <= (y2) && j >= (y1) )
-            {
-                maskC[(i*d1)+j]=1.0;
-            }
-            else if(j <= (y2+1) && j >= (y2) )
-            {
-                maskC[(i*d1)+j]=y2- ((int)y2);
-            }
-            else if(j <= (y1) && j >= (y1-1) )
-            {
-                maskC[(i*d1)+j]=y1- ((int)y1);
-            }
-        }
-        else
-        {
-        maskC[(i*d1)+j]=0.0;
-        }
+        cir.x[i] = 0.0;
+        cir.y[i] = 0.0;
     }
   }
 
-  for (i=0; i<(d1+1); i++)
-  {
-  float Y2= (b+sqrt((r1*r1)-((i-a)*(i-a))));
-  float Y1= (b-sqrt((r1*r1)-((i-a)*(i-a))));
-  float X2= (a+sqrt((r1*r1)-((i-b)*(i-b))));
-  float X1= (a-sqrt((r1*r1)-((i-b)*(i-b))));
-  printf("Diameter=%d, Radio=%f, X(%f,%f), Y(%f,%f)\n",d1,r1,X1,X2,Y1,Y2);
-  for (j=0; j<(d1+1); j++)
-    {
-        if(j == X2 || j == X1)
-        {
-            masky[(i*(d1+1))+j]=1.0;
-            maskx[(j*(d1+1))+i]=1.0;
-        }
-        else if(j <= (X1) && j > (X1-1) )
-        {
-            if (X1 == 0.0 || Y1==0.0)
-            {
-                masky[(i*(d1+1))+j]=1.0;
-                maskx[(j*(d1+1))+i]=1.0;
-            }
-            else{
-            masky[(i*(d1+1))+j]=X1-j;
-            maskx[(j*(d1+1))+i]=Y1-j;
-            }
-        }
-        else if(j <= (X2) && j > (X2-1))
-        {
-            if (X1 == 0.0 || Y1==0.0)
-            {
-                masky[(i*(d1+1))+j]=1.0;
-                maskx[(j*(d1+1))+i]=1.0;
-            }
-            else{
-            masky[(i*(d1+1))+j]=X2-j;
-            maskx[(j*(d1+1))+i]=Y2-j;
-            }
-        }
-        else
-        {
-        masky[(i*(d1+1))+j]=0.0;
-        maskx[(j*(d1+1))+i]=0.0;
-        }
-    }
-  }
+  qa=supr_zeros(cir.x,cir.y,cir.dim);
+  free_MASK_CIRCLE(cir);
+  delete_equals(qa);
+  cir=supr_zeros(qa.x,qa.y,qa.dim);
+  free_MASK_CIRCLE(qa);
 
-printf("\n");
-for (i=0; i<(d1+1); i++)
-  {
-  for (j=0; j<(d1+1); j++)
+  maskC=map_area(cir,dspace,area,d1);
+  free_MASK_CIRCLE(cir);
+/*
+for(j=0; j<d1 ; j++)
+{
+    for(i=0; i<d1 ; i++)
     {
-        //maskx[(i*(d1+1))+j]=maskx[(i*(d1+1))+j];
-        printf("%f ",maskx[(i*(d1+1))+j]);
+        printf("%f ",maskC[(j*d1)+i]);
     }
     printf("\n");
-  }
-printf("\n");
+}
+printf("\n");*/
 
-for (i=0; i<(d1+1); i++)
-  {
-  for (j=0; j<(d1+1); j++)
-    {
-        //masky[(i*(d1+1))+j]=masky[(i*(d1+1))+j];
-        printf("%f ",masky[(i*(d1+1))+j]);
-    }
-    printf("\n");
-  }
-
-printf("\n");
-
-for (i=0; i<(d1+1); i++)
-  {
-  for (j=0; j<(d1+1); j++)
-    {
-        if (maskx[(i*(d1+1))+j] == 0.0 && masky[(i*(d1+1))+j]==0.0){
-            maskxy[(i*(d1+1))+j] = 0.0;
-            printf("%f ",maskx[(i*(d1+1))+j]);
-        }
-        else if(maskx[(i*(d1+1))+j] > 0.0){
-            /*if (i<r1+1)
-                maskxy[(i*(d1+1))+j] = 1 - maskx[(i*(d1+1))+j];
-            else*/
-                maskxy[(i*(d1+1))+j] = maskx[(i*(d1+1))+j];
-
-            printf("%f ",maskxy[(i*(d1+1))+j]);
-        }
-        else if(masky[(i*(d1+1))+j] > 0.0){
-             /*if (j<r1+1)
-                maskxy[(i*(d1+1))+j] = 1 - masky[(i*(d1+1))+j];
-            else*/
-                maskxy[(i*(d1+1))+j] = masky[(i*(d1+1))+j];
-
-            printf("%f ",maskxy[(i*(d1+1))+j]);
-        }
-    }
-    printf("\n");
-  }
-    printf("\n");
-
-  for (i=0; i<d1; i++)
-  {
-    for (j=0; j<d1; j++)
-    {
-        mask[(i*d1)+j]=fabs(maskxy[(i*(d1+1))+j] - maskxy[((i+1)*(d1+1))+j] -maskxy[(i*(d1+1))+(j+1)] - maskxy[((i+1)*(d1+1))+(j+1)] );
-        printf("%f ",mask[(i*(d1))+j]);
-    }
-    printf("\n");
-  }
-
-
-  free(mask);
-  free(maskx);
-  free(masky);
-printf("\n");
 return maskC;
 }
 
@@ -843,4 +749,237 @@ for(j=y ; j< y+k ; j++)
     }
 }
 return max;
+}
+
+void sort_two_arr(float *X, float *Y, int ndata, int d)
+{
+int i,j;
+if (d==0)
+{
+for (i = 1; i < ndata; ++i)
+  {
+    float key = Y[i];
+    float kex = X[i];
+    j = i - 1;
+
+    while (j >= 0 && Y[j] > key)
+    {
+        Y[j + 1] = Y[j];
+        X[j + 1] = X[j];
+        j = j - 1;
+    }
+    Y[j + 1] = key;
+    X[j + 1] = kex;
+  }
+}
+else if(d==1)
+{
+for (i = 1; i < ndata; ++i)
+  {
+    float key = Y[i];
+    float kex = X[i];
+    j = i - 1;
+
+    while (j >= 0 && Y[j] < key)
+    {
+        Y[j + 1] = Y[j];
+        X[j + 1] = X[j];
+        j = j - 1;
+    }
+    Y[j + 1] = key;
+    X[j + 1] = kex;
+  }
+}
+return;
+}
+
+MASK_CIRCLE supr_zeros(float *x, float *y, int din)
+{
+int i;
+int d=0;
+MASK_CIRCLE out;
+
+for (i=0;i<din;i++)
+{
+    if((x[i] + y[i])!=0.0)
+    {
+        d++;
+    }
+}
+out.dim = d;
+d=0;
+//printf("OUT=%d\n",out.dim);
+out.x = (float*) calloc((out.dim),sizeof(float));
+out.y = (float*) calloc((out.dim),sizeof(float));
+for (i=0;i<din;i++)
+{
+    if((x[i] + y[i])!=0.0)
+    {
+        out.x[d]=x[i];
+        out.y[d]=y[i];
+        d++;
+    }
+}
+return out;
+}
+
+void free_MASK_CIRCLE(MASK_CIRCLE data)
+{
+free(data.x);
+free(data.y);
+return;
+}
+
+MASK_CIRCLE concat_arr(MASK_CIRCLE c1, MASK_CIRCLE c2, MASK_CIRCLE c3, MASK_CIRCLE c4)
+{
+int i;
+int d=0;
+MASK_CIRCLE out;
+out.dim = c1.dim+c2.dim+c3.dim+c4.dim;
+
+out.x = (float*) calloc((out.dim),sizeof(float));
+out.y = (float*) calloc((out.dim),sizeof(float));
+
+for (i=0;i<c1.dim;i++)
+{
+   out.x[i] = c1.x[i];
+   out.y[i] = c1.y[i];
+}
+for (i=0;i<c3.dim;i++)
+{
+   out.x[i+c1.dim] = c3.x[i];
+   out.y[i+c1.dim] = c3.y[i];
+}
+for (i=0;i<c4.dim;i++)
+{
+   out.x[i+c1.dim+c3.dim] = c4.x[i];
+   out.y[i+c1.dim+c3.dim] = c4.y[i];
+}
+for (i=0;i<c2.dim;i++)
+{
+   out.x[i+c1.dim+c3.dim+c4.dim] = c2.x[i];
+   out.y[i+c1.dim+c3.dim+c4.dim] = c2.y[i];
+}
+
+return out;
+}
+
+void delete_equals(MASK_CIRCLE data)
+{
+int i;
+int d=0;
+for(i=0; i<data.dim -1 ; i++)
+{
+    if (data.x[i] == data.x[i+1] && data.y[i] == data.y[i+1] )
+    {
+     data.x[i]=0.0;
+     data.y[i]=0.0;
+    }
+}
+
+if(data.x[i] == data.x[data.dim - 1])
+{
+    data.x[i] = 0.0;
+    data.y[i] = 0.0;
+}
+
+return;
+}
+
+float * map_area(MASK_CIRCLE in, float dspace, int area, int d)
+{
+int i,j,k;
+MASK_CIRCLE out;
+out.dim = area;
+float sp=(float)(area/2.0);
+out.x = (float*) calloc((out.dim*out.dim),sizeof(float));
+out.y = (float*) calloc((out.dim*out.dim),sizeof(float));
+float * mask=(float*) calloc((out.dim*out.dim),sizeof(float));
+float * ones=(float*) calloc((out.dim*out.dim),sizeof(float));
+float * maskC=(float*) calloc((out.dim*out.dim),sizeof(float));
+
+int p;
+for(j=0; j<out.dim ; j++)
+{
+    for(i=0; i<out.dim ; i++)
+    {
+        p=0;
+        for(k=0; k<in.dim;k++)
+        {
+            if (in.x[k] >= i && in.x[k] < (i+1))
+            {
+                if (in.y[k] > j && in.y[k] < (j+1))
+                {
+                    out.x[(j*out.dim )+i] += (in.y[k] - (float)j);
+                    p++;
+                }
+            }
+        }
+        if(p!=0)
+        {
+            out.x[(j*out.dim )+i] = out.x[(j*out.dim )+i]/p;
+            if(j< sp)
+            {
+                out.x[(j*out.dim )+i] = 1.0 - out.x[(j*out.dim )+i] ;
+            }
+            out.y[(i*out.dim )+j] = out.x[(j*out.dim )+i];
+        }
+        else
+        {
+            out.x[(j*out.dim )+i] = 1.0;
+        }
+    }
+}
+
+for(j=0; j<out.dim ; j++)
+{
+    for(i=0; i<out.dim ; i++)
+    {
+        if(out.x[(j*out.dim )+i] > out.y[(j*out.dim )+i])
+        {
+            mask[(j*out.dim)+i] = out.x[(j*out.dim)+i];
+        }
+        else if(out.x[(j*out.dim )+i] < out.y[(j*out.dim )+i])
+        {
+            mask[(j*out.dim)+i] =  out.y[(j*out.dim )+i];
+        }
+        else
+        {
+            mask[(j*out.dim)+i] =  out.x[(j*out.dim )+i];
+        }
+    }
+}
+
+for(j=0; j<out.dim ; j++)
+{
+    int dm1=0;
+    for(i=0; i<(int)out.dim/2 ; i++)
+    {
+       if (mask[(j*out.dim)+i] < 1.0 && dm1==0)
+            dm1=1;
+
+       if(dm1==1)
+       {
+            ones[(j*out.dim)+i] = 1.0;
+            ones[(j*out.dim)+(out.dim-1)-i] = 1.0;
+       }
+
+    }
+}
+
+for(j=0; j<out.dim ; j++)
+{
+    for(i=0; i<out.dim ; i++)
+    {
+        maskC[(j*out.dim)+i] = ((mask[(j*out.dim)+i]) * ones[(j*out.dim)+i]);
+  //      printf("%f ",maskC[(j*out.dim)+i]);
+    }
+//    printf("\n");
+}
+//printf("\n");
+
+free(mask);
+free(ones);
+free_MASK_CIRCLE(out);
+return maskC;
 }

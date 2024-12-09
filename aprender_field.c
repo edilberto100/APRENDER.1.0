@@ -216,7 +216,7 @@ int apphi_field(struct arguments arguments) {
 
 
   /************************* Select the stars **********************************/
-  int nf=1, nist, nobj,naper;
+  int nf=1, nist, nobj, naper;
   night_files = get_data_fits(&filemef_science[m][0], &nf);
   file = fopen(arguments.ist,"r");
   if (file == NULL)
@@ -253,7 +253,6 @@ int apphi_field(struct arguments arguments) {
   D  = (int*) calloc(comp.cant,sizeof(int));
   D2 = (int*) calloc(comp.cant,sizeof(int));
 
-  //printf("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
   for(i=0 ; i<comp.cant ; i++)
   {
 
@@ -278,7 +277,6 @@ int apphi_field(struct arguments arguments) {
    sky[i].naxes[2] = nx_z;
    sky[i].data = (float*) calloc(nx_z*D2[i]*D2[i],sizeof(float));
   }
- // printf("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
   /*****************************************************************************/
 
   /*****************************************************************************/
@@ -381,7 +379,7 @@ int apphi_field(struct arguments arguments) {
   {
    st[i].err=(float*) calloc(st[i].naxes[2],sizeof(float));
    st[i].errfluxes=(float*) calloc(st[i].naxes[2],sizeof(float));
-   st[i].curve=get_mag(st[i].star,sky[i].data,st[i].naxes,sky[i].naxes,comp.D3[i],EXPTIME[0],st[i].err,st[i].errfluxes);
+   st[i].curve=get_mag(st[i].star,sky[i].data,st[i].naxes,sky[i].naxes,comp.D3[i],arguments.tinteger,st[i].err,st[i].errfluxes);
    st[i].fluxes=get_fluxes(st[i].star,sky[i].data,st[i].naxes,sky[i].naxes,comp.D3[i]);
    st[i].z= size_snr(st[i].naxes[2],lz);
    st[i].C_SNR = sign_noise(st[i].star,sky[i].data,st[i].naxes,D2[i],st[i].z,lz,comp.D3[i]);
@@ -392,6 +390,11 @@ int apphi_field(struct arguments arguments) {
    }
   }
   printf(" APRENDER saved the data who:\n");
+  for(i=0 ; i<naper ; i++)
+  {
+     save_ALCDEF_complete(st,comp.cant,JD,header,nobj,i,name);
+  }
+
   if(comp.cant == 1)
   {
     st[0].diff = get_diff_curve(st[0].curve,st[0].curve,st[0].naxes);
@@ -412,10 +415,6 @@ int apphi_field(struct arguments arguments) {
         save_ALCDEF(st[i],lz,JD,header);
         free_STAR_DATA(st[i],lz);
     }
-  }
-  for(i=0 ; i<naper ; i++)
-  {
-     save_ALCDEF_complete(st,comp.cant,JD,header,nobj,i,name);
   }
 
   /***************************************************************************************/

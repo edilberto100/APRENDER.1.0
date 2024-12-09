@@ -11,7 +11,7 @@ APRENDER = aprender.c $(APRENDER_H)
 OBJS_Field = $(APRENDER:.c=.o)
 DEPS_Field = $(APRENDER:.c=.d)
 
-TARGET_Field = APRENDER.6.0
+TARGET_Field = APRENDER.1.0
 
 all: 
 	$(CC) $(APRENDER) $(CFLAGS) $(LDFLAGS) $(LIBS) -o $(TARGET_Field)

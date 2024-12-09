@@ -186,7 +186,7 @@ float *A= (float*) calloc(naxes_star[2],sizeof(float));
 float *B= (float*) calloc(naxes_star[2],sizeof(float));
 long int i, j, k,l=0;
 //printf("Dim star= %ld, Dim Sky=%ld,D3=%ld\n",naxes_star[0],naxes_sky[0],D3);
-float * circle = create_mask_circle(naxes_star[0]);
+int * circle = create_mask_circle(naxes_star[0]);
 int * ring = create_mask_ring(naxes_sky[0],D3);
 
 float a_R= 0.0;
@@ -200,8 +200,8 @@ for(i=0 ; i<naxes_sky[0]; i++){
 }
 for(i=0 ; i<naxes_star[0]; i++){
     for(j=0 ; j<naxes_star[1]; j++){
-        if(circle[(i*naxes_star[1])+j] > 0.0)
-            a_S= a_S + circle[(i*naxes_star[1])+j];
+        if(circle[(i*naxes_star[1])+j] == 1)
+            a_S= a_S + 1.0;
     }
 }
 //printf("Area_Ring = %0.2f, Area_Star = %0.2f\n",a_R, a_S);
@@ -250,7 +250,7 @@ curve[k] =  (25.0-2.5*log10(A[k]-(a_S*(B[k]/a_R))))+2.5*log10(100);
 return curve;
 }
 
-float * get_mag(float * star, float * sky , long int *naxes_star, long int *naxes_sky, long int D3,double ti, float * err, float * errfluxes)
+float * get_mag(float * star, float * sky , long int *naxes_star, long int *naxes_sky, long int D3,int ti, float * err, float * errfluxes)
 {
 float * curve = (float*) calloc(naxes_star[2],sizeof(float));
 float *A= (float*) calloc(naxes_star[2],sizeof(float));   // Fluxes of stars
@@ -258,7 +258,7 @@ float *B= (float*) calloc(naxes_star[2],sizeof(float));   // Fluxes of Sky
 float *SD= (float*) calloc(naxes_star[2],sizeof(float));  // Standar Desviation
 long int i, j, k,l=0;
 //printf("Dim star= %ld, Dim Sky=%ld,D3=%ld\n",naxes_star[0],naxes_sky[0],D3);
-float * circle = create_mask_circle(naxes_star[0]);
+int * circle = create_mask_circle(naxes_star[0]);
 int * ring = create_mask_ring(naxes_sky[0],D3);
 
 float a_R= 0.0;
@@ -270,11 +270,10 @@ for(i=0 ; i<naxes_sky[0]; i++){
             a_R= a_R + 1.0;
     }
 }
-
 for(i=0 ; i<naxes_star[0]; i++){
     for(j=0 ; j<naxes_star[1]; j++){
-        if(circle[(i*naxes_star[1])+j] > 0.0)
-            a_S= a_S + circle[(i*naxes_star[1])+j];
+        if(circle[(i*naxes_star[1])+j] == 1)
+            a_S= a_S + 1.0;
     }
 }
 
@@ -287,7 +286,6 @@ for(k=0 ; k<naxes_star[2]; k++)
         }
     }
 }
-
 for(k=0 ; k<naxes_sky[2]; k++)
 {
     B[k]=0.0;
@@ -310,7 +308,6 @@ for(k=0 ; k<naxes_sky[2]; k++)
         }
     }
     SD[k] = pow((SD[k]/a_R),(0.5));
-    //printf("SD[k]=%f\n",SD[k]);
 }
 
 //printf("Fluxes   SD\n");
@@ -322,7 +319,7 @@ curve[k] =  (25.0-2.5*log10(A[k]-(a_S*(B[k]/a_R))))+2.5*log10(ti);
 err[k] = sqrt((fluxes/epadu) + (a_S*(SD[k]*SD[k])) + (a_S*a_S*(SD[k]*SD[k])/a_R));
 err[k] =  1.0857 * err[k] / fluxes;
 errfluxes[k] = fluxes/(SD[k]*sqrt(a_R));
-//printf("fluxes= %f, A[k]=%f, a_S=%f, B[k]=%f,a_R=%f, ti=%lf\n",fluxes,A[k],a_S,B[k],a_R,ti);
+//printf("errfluxes= %lf\n",errfluxes[k]);
 }
 //printf("\n");
 
@@ -342,7 +339,7 @@ float *A= (float*) calloc(naxes_star[2],sizeof(float));
 float *B= (float*) calloc(naxes_star[2],sizeof(float));
 long int i, j, k,l=0;
 //printf("Dim star= %ld, Dim Sky=%ld,D3=%ld\n",naxes_star[0],naxes_sky[0],D3);
-float * circle = create_mask_circle(naxes_star[0]);
+int * circle = create_mask_circle(naxes_star[0]);
 int * ring = create_mask_ring(naxes_sky[0],D3);
 
 float a_R= 0.0;
@@ -356,8 +353,8 @@ for(i=0 ; i<naxes_sky[0]; i++){
 }
 for(i=0 ; i<naxes_star[0]; i++){
     for(j=0 ; j<naxes_star[1]; j++){
-        if(circle[(i*naxes_star[1])+j] > 0.0)
-            a_S= a_S + circle[(i*naxes_star[1])+j];
+        if(circle[(i*naxes_star[1])+j] == 1)
+            a_S= a_S + 1.0;
     }
 }
 //printf("Area_Ring = %0.2f, Area_Star = %0.2f\n",a_R, a_S);

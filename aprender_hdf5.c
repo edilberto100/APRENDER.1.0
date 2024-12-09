@@ -680,6 +680,7 @@ void save_ALCDEF_complete(STAR_DATA *star, long int cant, double *jd, HEADER hea
         for(i=0 ; i< star[j].naxes[2]; i++)
         {
             fprintf(file, "DATA=%lf|%f|%f\n", jd[i], star[j].curve[i], star[j].err[i]);
+            //printf("DATA=%lf|%f|%f\n", jd[i], star[j].curve[i], star[j].err[i]);
         }
     }
 
